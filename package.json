@@ -1,0 +1,33 @@
+{
+  "name": "my-llm-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nalin70/my-llm-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nalin70/my-llm-app/issues"
+  },
+  "homepage": "https://github.com/nalin70/my-llm-app#readme",
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.64",
+    "ai": "^6.0.185",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.0",
+    "tsx": "^4.22.2",
+    "typescript": "^6.0.3"
+  }
+}
