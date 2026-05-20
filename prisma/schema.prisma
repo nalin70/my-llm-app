@@ -1,0 +1,921 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model all_holdings {
+  id                         BigInt    @id @default(autoincrement())
+  fund_name                  String?   @db.VarChar(255)
+  company_name               String?   @db.VarChar(255)
+  group_company_name         String?   @db.VarChar(255)
+  sector_name                String?   @db.VarChar(255)
+  instrument_name            String?   @db.VarChar(255)
+  isin_code                  String?   @db.VarChar(255)
+  bse_code                   String?   @db.VarChar(255)
+  nse_code                   String?   @db.VarChar(255)
+  rating                     String?   @db.VarChar(255)
+  rating_agency              String?   @db.VarChar(255)
+  quantity                   String?   @db.VarChar(255)
+  market_value_crs           String?   @db.VarChar(255)
+  percentage_of_net_assets   String?   @db.VarChar(255)
+  market_cap                 String?   @db.VarChar(255)
+  issuer_name                String?   @db.VarChar(255)
+  asset_class_classification String?   @db.VarChar(255)
+  mf_name                    String?   @db.VarChar(255)
+  adtv                       String?   @db.VarChar(255)
+  impact_cost                String?   @db.VarChar(255)
+  market_cap_modified        String?   @db.VarChar(255)
+  created_at                 DateTime  @default(now())
+  updated_at                 DateTime  @default(now())
+  collection_date            DateTime? @db.Date
+}
+
+model authentication {
+  id                      BigInt                    @id @default(autoincrement())
+  email                   String                    @db.VarChar(255)
+  password                String                    @db.VarChar(255)
+  role                    String?                   @db.VarChar(50)
+  name                    String?                   @db.VarChar(255)
+  phone                   String?                   @unique(map: "phone") @db.VarChar(20)
+  remarks                 String?                   @db.Text
+  created_at              DateTime?                 @db.DateTime(0)
+  updated_at              DateTime?                 @db.DateTime(0)
+  questionnaire_sessions  questionnaire_sessions[]
+  soft_optimizer_runs     soft_optimizer_runs[]
+  transaction_history     transaction_history[]
+  user_optimizer_configs  user_optimizer_configs[]
+  user_portfolio_tranches user_portfolio_tranches[]
+
+  @@index([email], map: "authentication_email")
+}
+
+model benchmark_nav {
+  id                BigInt    @id @default(autoincrement())
+  scheme_index_name String?   @db.VarChar(50)
+  scheme_code       String?   @db.VarChar(50)
+  cleaned_fund_name String?   @db.VarChar(50)
+  launch_date       DateTime? @db.Date
+  nav_date          DateTime? @db.Date
+  nav_value         Decimal?  @db.Decimal(16, 5)
+  collection_date   DateTime? @db.Date
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @default(now())
+
+  @@index([scheme_code], map: "benchmark_nav_scheme_code")
+}
+
+model bio_data_1 {
+  fund_id                              BigInt       @id @default(autoincrement())
+  mfi_scheme_code                      String       @db.VarChar(255)
+  fund_name                            String       @db.VarChar(255)
+  top_performer                        String?      @db.VarChar(20)
+  most_invested_with                   String?      @db.VarChar(20)
+  new_and_trending                     String?      @db.VarChar(20)
+  global_opportunities                 String?      @db.VarChar(20)
+  fund_name_2                          String?      @db.VarChar(255)
+  asset_class                          String?      @db.VarChar(255)
+  category                             String?      @db.VarChar(255)
+  fund_of_fund                         String?      @db.VarChar(255)
+  direct_plan                          String       @db.VarChar(255)
+  role_in_portfolio                    String       @db.VarChar(255)
+  amfi_riskometer                      String       @db.VarChar(255)
+  objective                            String       @db.VarChar(255)
+  benchmark                            String       @db.VarChar(255)
+  fund_returns_1m                      String?      @db.VarChar(255)
+  fund_returns_3m                      String?      @db.VarChar(255)
+  fund_returns_6m                      String?      @db.VarChar(255)
+  fund_returns_1y                      String?      @db.VarChar(255)
+  fund_returns_3y                      String?      @db.VarChar(255)
+  fund_returns_5y                      String?      @db.VarChar(255)
+  floating_box_fund_1m                 String?      @db.VarChar(255)
+  floating_box_fund_3m                 String?      @db.VarChar(255)
+  floating_box_fund_6m                 String?      @db.VarChar(255)
+  floating_box_fund_1y                 String?      @db.VarChar(255)
+  floating_box_fund_3y                 String?      @db.VarChar(255)
+  floating_box_fund_5y                 String?      @db.VarChar(255)
+  floating_box_category_median_1m      String?      @db.VarChar(255)
+  floating_box_category_median_3m      String?      @db.VarChar(255)
+  floating_box_category_median_6m      String?      @db.VarChar(255)
+  floating_box_category_median_1y      String?      @db.VarChar(255)
+  floating_box_category_median_3y      String?      @db.VarChar(255)
+  floating_box_category_median_5y      String?      @db.VarChar(255)
+  fund_aum                             String?      @db.VarChar(255)
+  minimum_investment_amount_rs         String?      @db.VarChar(255)
+  launch_date                          String?      @db.VarChar(255)
+  collection_date                      DateTime?    @db.Date
+  expense_ratio                        String?      @db.VarChar(255)
+  commission_saved                     String?      @db.VarChar(255)
+  fund_disclaimer                      String?      @db.VarChar(255)
+  exit_load                            String?      @db.VarChar(255)
+  scheme_isin                          String?      @db.VarChar(255)
+  active_passive                       String?      @db.VarChar(255)
+  fund_lock_in                         String?      @db.VarChar(255)
+  tax_benefit                          String?      @db.VarChar(255)
+  taxation                             String?      @db.VarChar(255)
+  sip_return_fund_1y                   String?      @db.VarChar(255)
+  sip_return_fund_3y                   String?      @db.VarChar(255)
+  sip_return_fund_5y                   String?      @db.VarChar(255)
+  sip_return_category_median_1y        String?      @db.VarChar(255)
+  sip_return_category_median_3y        String?      @db.VarChar(255)
+  sip_return_category_median_5y        String?      @db.VarChar(255)
+  fund_alpha                           String?      @db.VarChar(255)
+  fund_volatility                      String?      @db.VarChar(255)
+  fund_tracking_error                  String?      @db.VarChar(255)
+  fund_beta                            String?      @db.VarChar(255)
+  fund_risk_adjusted_return            String?      @db.VarChar(255)
+  category_median_alpha                String?      @db.VarChar(255)
+  category_median_volatility           String?      @db.VarChar(255)
+  category_median_tracking_error       String?      @db.VarChar(255)
+  category_median_beta                 String?      @db.VarChar(255)
+  category_median_risk_adjusted_return String?      @db.VarChar(255)
+  p_e                                  String?      @db.VarChar(255)
+  p_b                                  String?      @db.VarChar(255)
+  avg_maturity_yrs                     String?      @db.VarChar(255)
+  mac_duration_yrs                     String?      @db.VarChar(255)
+  mod_duration                         String?      @db.VarChar(255)
+  ytm_percentage                       String?      @db.VarChar(255)
+  created_at                           DateTime     @default(now())
+  updated_at                           DateTime     @default(now())
+  stt_applicability                    String?      @db.VarChar(20)
+  international_fund                   String?      @db.VarChar(20)
+  bio_data_2                           bio_data_2[]
+
+  @@index([mfi_scheme_code], map: "bio_data_1_mfi_scheme_code")
+}
+
+model bio_data_2 {
+  id                                           BigInt     @id @default(autoincrement())
+  fund_id                                      BigInt
+  asset_class_split_equity                     Decimal?   @db.Decimal(16, 4)
+  asset_class_split_debt                       Decimal?   @db.Decimal(16, 4)
+  asset_class_split_cash_others                Decimal?   @db.Decimal(16, 4)
+  asset_class_split_precious_metals            Decimal?   @db.Decimal(16, 4)
+  sector_split_financial_services              Decimal?   @db.Decimal(16, 4)
+  sector_split_telecommunication               Decimal?   @db.Decimal(16, 4)
+  sector_split_information_technology          Decimal?   @db.Decimal(16, 4)
+  sector_split_healthcare                      Decimal?   @db.Decimal(16, 4)
+  sector_split_chemicals                       Decimal?   @db.Decimal(16, 4)
+  sector_split_consumer_services               Decimal?   @db.Decimal(16, 4)
+  sector_split_automobile_and_auto_components  Decimal?   @db.Decimal(16, 4)
+  sector_split_power                           Decimal?   @db.Decimal(16, 4)
+  sector_split_textiles                        Decimal?   @db.Decimal(16, 4)
+  sector_split_services                        Decimal?   @db.Decimal(16, 4)
+  sector_split_fast_moving_consumer_goods      Decimal?   @db.Decimal(16, 4)
+  sector_split_metals_mining                   Decimal?   @db.Decimal(16, 4)
+  sector_split_construction                    Decimal?   @db.Decimal(16, 4)
+  sector_split_sovereign                       Decimal?   @db.Decimal(16, 4)
+  sector_split_realty                          Decimal?   @db.Decimal(16, 4)
+  sector_split_oil_gas_consumable_fuels        Decimal?   @db.Decimal(16, 4)
+  sector_split_others                          Decimal?   @db.Decimal(16, 4)
+  international_split_international_exposure   Decimal?   @db.Decimal(16, 4)
+  international_split_domestic_exposure        Decimal?   @db.Decimal(16, 4)
+  equity_market_cap_split_large_cap            Decimal?   @db.Decimal(16, 4)
+  equity_market_cap_split_mid_cap              Decimal?   @db.Decimal(16, 4)
+  equity_market_cap_split_small_cap            Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_sovereign          Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_aaa_a1             Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_cash_and_others    Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_equity_instruments Decimal?   @db.Decimal(16, 4)
+  fund_house_name                              String?    @db.VarChar(255)
+  fund_manager                                 String?    @db.VarChar(255)
+  no_of_funds                                  String?    @db.VarChar(255)
+  total_corpus_crs                             String?    @db.VarChar(255)
+  eligibility_for_calculation_1m               String?    @db.VarChar(20)
+  eligibility_for_calculation_3m               String?    @db.VarChar(20)
+  eligibility_for_calculation_6m               String?    @db.VarChar(20)
+  eligibility_for_calculation_1y               String?    @db.VarChar(20)
+  eligibility_for_calculation_3y               String?    @db.VarChar(20)
+  eligibility_for_calculation_5y               String?    @db.VarChar(20)
+  ytm                                          Decimal?   @db.Decimal(16, 4)
+  sector_split_media_entertainment_publication Decimal?   @db.Decimal(16, 4)
+  sector_split_capital_goods                   Decimal?   @db.Decimal(16, 4)
+  sector_split_consumer_durables               Decimal?   @db.Decimal(16, 4)
+  sector_split_construction_materials          Decimal?   @db.Decimal(16, 4)
+  sector_split_diversified                     Decimal?   @db.Decimal(16, 4)
+  sector_split_forest_materials                Decimal?   @db.Decimal(16, 4)
+  sector_split_utilities                       Decimal?   @db.Decimal(16, 4)
+  equity_market_cap_split_unlisted             Decimal?   @db.Decimal(16, 4)
+  equity_market_cap_split_mutual_funds         Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_aa_aa_aa           Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_a_a_a              Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_bbb_and_below      Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_fd                 Decimal?   @db.Decimal(16, 4)
+  debt_credit_quality_split_unrated            Decimal?   @db.Decimal(16, 4)
+  collection_date                              DateTime?  @db.Date
+  created_at                                   DateTime   @default(now())
+  updated_at                                   DateTime   @default(now())
+  bio_data_1                                   bio_data_1 @relation(fields: [fund_id], references: [fund_id])
+
+  @@index([fund_id], map: "bio_data_2_fund_id")
+}
+
+model common_values {
+  id              BigInt    @id @default(autoincrement())
+  common_key      String    @db.VarChar(255)
+  common_value    Decimal   @db.Decimal(30, 10)
+  collection_date DateTime? @db.Date
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now())
+
+  @@index([common_key], map: "common_values_common_key")
+}
+
+model compliance_matrix_entries {
+  id                      BigInt                           @id @default(autoincrement())
+  version_id              BigInt
+  fund_a_code             String                           @db.VarChar(50)
+  fund_b_code             String                           @db.VarChar(50)
+  category_a              String?                          @db.VarChar(100)
+  category_b              String?                          @db.VarChar(100)
+  overlap_limit           Decimal?                         @db.Decimal(6, 4)
+  actual_overlap          Decimal                          @db.Decimal(10, 6)
+  status                  compliance_matrix_entries_status @default(ALLOWED)
+  created_at              DateTime                         @default(now()) @db.DateTime(0)
+  overlap_matrix_versions overlap_matrix_versions          @relation(fields: [version_id], references: [id], onDelete: Cascade)
+
+  @@unique([version_id, fund_a_code, fund_b_code], map: "uq_compliance_entry_version_pair")
+  @@index([status], map: "idx_compliance_entry_status")
+  @@index([version_id], map: "idx_compliance_entry_version")
+}
+
+model cron_job_logs {
+  id         BigInt    @id @default(autoincrement())
+  job_name   String    @db.VarChar(100)
+  status     String    @db.VarChar(20)
+  started_at DateTime  @default(now())
+  ended_at   DateTime?
+  details    String?   @db.Text
+  error      String?   @db.Text
+
+  @@index([job_name, started_at], map: "idx_cron_log_job_date")
+}
+
+model fund_house {
+  id         BigInt   @id @default(autoincrement())
+  name       String   @unique @db.VarChar(255)
+  logo_url   String?  @db.VarChar(500)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+
+model fund_name_change {
+  id              BigInt    @id @default(autoincrement())
+  mfi_scheme_code String    @db.VarChar(255)
+  old_name_1      String    @db.VarChar(255)
+  old_name_2      String    @db.VarChar(255)
+  old_name_3      String    @db.VarChar(255)
+  old_name_4      String    @db.VarChar(255)
+  collection_date DateTime? @db.Date
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @default(now())
+
+  @@index([mfi_scheme_code])
+}
+
+model fund_nav {
+  id                BigInt    @id @default(autoincrement())
+  scheme_index_name String?   @db.VarChar(255)
+  small_fund_name   String?   @db.VarChar(255)
+  scheme_code       String    @db.VarChar(50)
+  nav_date          DateTime  @db.Date
+  cleaned_fund_name String?   @db.VarChar(255)
+  launch_date       DateTime? @db.Date
+  nav_value         Decimal?  @db.Decimal(16, 5)
+  collection_date   DateTime? @db.Date
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @default(now())
+
+  @@index([scheme_code], map: "fund_nav_scheme_code")
+}
+
+model investable_universe {
+  id                                                              BigInt    @id @default(autoincrement())
+  mfi_scheme_code                                                 String?   @db.VarChar(45)
+  fund_name                                                       String?   @db.VarChar(255)
+  equity                                                          String?   @db.VarChar(45)
+  debt_cash_and_other                                             String?   @db.VarChar(45)
+  large_cap                                                       String?   @db.VarChar(45)
+  mid_cap                                                         String?   @db.VarChar(45)
+  small_cap                                                       String?   @db.VarChar(45)
+  asset_class                                                     String?   @db.VarChar(255)
+  sub_asset_class                                                 String?   @db.VarChar(255)
+  tactical_call_for_debt                                          String?   @db.VarChar(255)
+  rank                                                            Int?
+  secure_short_term_horizon_limited_access_safe_harbor            String?   @db.VarChar(45)
+  secure_short_term_horizon_flexible_capital_guardian             String?   @db.VarChar(45)
+  secure_medium_term_horizon_limited_access_peace_preserver       String?   @db.VarChar(45)
+  secure_medium_term_horizon_flexible_stability_keeper            String?   @db.VarChar(45)
+  secure_medium_term_horizon_comfortable_cautious_optimizer       String?   @db.VarChar(45)
+  secure_long_term_horizon_limited_access_wealth_sentinel         String?   @db.VarChar(45)
+  secure_long_term_horizon_flexible_steady_shield                 String?   @db.VarChar(45)
+  secure_long_term_horizon_comfortable_peace_preserver            String?   @db.VarChar(45)
+  conservative_short_term_horizon_limited_access_safe_harbor      String?   @db.VarChar(45)
+  conservative_short_term_horizon_flexible_capital_guardian       String?   @db.VarChar(45)
+  conservative_medium_term_horizon_limited_access_careful_climber String?   @db.VarChar(45)
+  conservative_medium_term_horizon_flexible_steady_voyager        String?   @db.VarChar(45)
+  conservative_medium_term_horizon_comfortable_wealth_protector   String?   @db.VarChar(45)
+  conservative_long_term_horizon_limited_access_cautious_builder  String?   @db.VarChar(45)
+  conservative_long_term_horizon_flexible_prudent_planner         String?   @db.VarChar(45)
+  conservative_long_term_horizon_comfortable_careful_climber      String?   @db.VarChar(45)
+  moderate_short_term_horizon_limited_access_safe_harbor          String?   @db.VarChar(45)
+  moderate_short_term_horizon_flexible_capital_guardian           String?   @db.VarChar(45)
+  moderate_medium_term_horizon_limited_access_wealth_harmonizer   String?   @db.VarChar(45)
+  moderate_medium_term_horizon_flexible_balanced_navigator        String?   @db.VarChar(45)
+  moderate_medium_term_horizon_comfortable_stable_climber         String?   @db.VarChar(45)
+  moderate_long_term_horizon_limited_access_pragmatic_planner     String?   @db.VarChar(45)
+  moderate_long_term_horizon_flexible_wealth_harmonizer           String?   @db.VarChar(45)
+  moderate_long_term_horizon_comfortable_balanced_navigator       String?   @db.VarChar(45)
+  growth_short_term_horizon_limited_access_safe_harbor            String?   @db.VarChar(45)
+  growth_short_term_horizon_flexible_capital_guardian             String?   @db.VarChar(45)
+  growth_medium_term_horizon_limited_access_growth_trailblazer    String?   @db.VarChar(45)
+  growth_medium_term_horizon_flexible_future_builder              String?   @db.VarChar(45)
+  growth_medium_term_horizon_comfortable_momentum_builder         String?   @db.VarChar(45)
+  growth_long_term_horizon_limited_access_visionary_investor      String?   @db.VarChar(45)
+  growth_long_term_horizon_flexible_future_builder                String?   @db.VarChar(45)
+  growth_long_term_horizon_comfortable_growth_trailblazer         String?   @db.VarChar(45)
+  aggressive_short_term_horizon_limited_access_safe_harbor        String?   @db.VarChar(45)
+  aggressive_short_term_horizon_flexible_capital_guardian         String?   @db.VarChar(45)
+  aggressive_medium_term_horizon_limited_access_bold_optimizer    String?   @db.VarChar(45)
+  aggressive_medium_term_horizon_flexible_wealth_maverick         String?   @db.VarChar(45)
+  aggressive_medium_term_horizon_comfortable_risk_charger         String?   @db.VarChar(45)
+  aggressive_long_term_horizon_limited_access_opportunity_hunter  String?   @db.VarChar(45)
+  aggressive_long_term_horizon_flexible_bold_visionary            String?   @db.VarChar(45)
+  aggressive_long_term_horizon_comfortable_maximizer              String?   @db.VarChar(45)
+  collection_date                                                 DateTime? @db.Date
+  created_at                                                      DateTime? @default(now()) @db.DateTime(0)
+  updated_at                                                      DateTime? @default(now()) @db.DateTime(0)
+}
+
+model nse_holidays {
+  id          BigInt   @id @default(autoincrement())
+  date        DateTime @unique(map: "uq_nse_holiday_date") @db.Date
+  description String?  @db.VarChar(255)
+  year        Int
+  created_at  DateTime @default(now())
+
+  @@index([year], map: "idx_nse_holiday_year")
+}
+
+model optimizer_limits {
+  id                                            BigInt    @id @default(autoincrement())
+  amc_percentage_limit                          Decimal?  @db.Decimal(6, 4)
+  fund_percentage_limit_core                    Decimal?  @db.Decimal(6, 4)
+  fund_percentage_absolute_tolerance_core       Decimal?  @db.Decimal(6, 4)
+  fund_percentage_limit_short_term              Decimal?  @db.Decimal(6, 4)
+  asset_class_percentage_absolute_tolerance     Decimal?  @db.Decimal(6, 4)
+  sub_asset_class_percentage_absolute_tolerance Decimal?  @db.Decimal(6, 4)
+  fund_limit_large_cap                          Int?
+  fund_limit_mid_cap                            Int?
+  fund_limit_small_cap                          Int?
+  fund_limit_large_and_mid_cap                  Int?
+  fund_limit_flexi_cap                          Int?
+  fund_limit_multi_cap                          Int?
+  fund_limit_large_mid_small_cap                Int?
+  fund_limit_india_total_market                 Int?
+  fund_limit_dividend_yield                     Int?
+  fund_limit_contra                             Int?
+  fund_limit_sector_bet_1                       Int?
+  fund_limit_sector_bet_2                       Int?
+  fund_limit_sector_bet_3                       Int?
+  fund_limit_international_1                    Int?
+  fund_limit_international_2                    Int?
+  fund_limit_international_3                    Int?
+  fund_limit_debt_core                          Int?
+  fund_limit_debt_tactical                      Int?
+  precious_metals_gold                          Decimal?  @db.Decimal(6, 4)
+  precious_metals_silver                        Decimal?  @db.Decimal(6, 4)
+  elss                                          Decimal?  @db.Decimal(6, 4)
+  short_term_parking                            Decimal?  @db.Decimal(6, 4)
+  collection_date                               DateTime? @db.Date
+  created_at                                    DateTime  @default(now()) @db.DateTime(0)
+  updated_at                                    DateTime  @default(now()) @db.DateTime(0)
+}
+
+model optimizer_lms_slack {
+  id                  BigInt         @id @default(autoincrement())
+  optimizer_run_id    String         @db.VarChar(36)
+  sub_asset_class     String         @db.VarChar(50)
+  min_allowed         Decimal        @db.Decimal(10, 6)
+  max_allowed         Decimal        @db.Decimal(10, 6)
+  actual_percentage   Decimal        @db.Decimal(10, 6)
+  violation           Decimal        @db.Decimal(10, 6)
+  violation_direction String         @db.VarChar(20)
+  created_at          DateTime       @default(now()) @db.DateTime(0)
+  optimizer_runs      optimizer_runs @relation(fields: [optimizer_run_id], references: [id], onDelete: Cascade)
+
+  @@index([optimizer_run_id], map: "idx_lms_slack_run_id")
+}
+
+model optimizer_overlap_slack {
+  id               BigInt         @id @default(autoincrement())
+  optimizer_run_id String         @db.VarChar(36)
+  fund_a_code      String         @db.VarChar(50)
+  fund_b_code      String         @db.VarChar(50)
+  fund_a_name      String?        @db.VarChar(255)
+  fund_b_name      String?        @db.VarChar(255)
+  overlap_limit    Decimal?       @db.Decimal(10, 6)
+  actual_overlap   Decimal        @db.Decimal(10, 6)
+  exceed           Decimal        @db.Decimal(10, 6)
+  slack_pair       Decimal        @db.Decimal(18, 6)
+  created_at       DateTime       @default(now()) @db.DateTime(0)
+  optimizer_runs   optimizer_runs @relation(fields: [optimizer_run_id], references: [id], onDelete: Cascade)
+
+  @@index([optimizer_run_id], map: "idx_overlap_slack_run_id")
+}
+
+model optimizer_runs {
+  id                         String                    @id @db.VarChar(36)
+  user_id                    BigInt
+  session_id                 BigInt?
+  persona_id                 String?                   @db.VarChar(120)
+  persona_code               String?                   @db.VarChar(120)
+  run_type                   optimizer_runs_run_type   @default(STRICT)
+  total_investment_amount    Decimal?                  @db.Decimal(18, 2)
+  residual_investable_amount Decimal?                  @db.Decimal(18, 2)
+  equity_amount              Decimal?                  @db.Decimal(18, 2)
+  equity_percentage          Decimal?                  @db.Decimal(10, 6)
+  debt_amount                Decimal?                  @db.Decimal(18, 2)
+  debt_percentage            Decimal?                  @db.Decimal(10, 6)
+  metals_amount              Decimal?                  @db.Decimal(18, 2)
+  metals_percentage          Decimal?                  @db.Decimal(10, 6)
+  large_cap_amount           Decimal?                  @db.Decimal(18, 2)
+  large_cap_percentage       Decimal?                  @db.Decimal(10, 6)
+  mid_cap_amount             Decimal?                  @db.Decimal(18, 2)
+  mid_cap_percentage         Decimal?                  @db.Decimal(10, 6)
+  small_cap_amount           Decimal?                  @db.Decimal(18, 2)
+  small_cap_percentage       Decimal?                  @db.Decimal(10, 6)
+  uninvested_cash            Decimal?                  @db.Decimal(18, 2)
+  rounding_adjustments_json  Json?
+  strict_feasible            Boolean                   @default(true)
+  used_slack                 Boolean                   @default(false)
+  slack_lms                  Decimal?                  @db.Decimal(18, 6)
+  slack_overlap              Decimal?                  @db.Decimal(18, 6)
+  total_slack                Decimal?                  @db.Decimal(18, 6)
+  penalty_constant           Decimal?                  @db.Decimal(18, 6)
+  objective_value            Decimal?                  @db.Decimal(18, 6)
+  weighted_avg_rank          Decimal?                  @db.Decimal(10, 6)
+  fund_allocations_json      Json?
+  ranks_json                 Json?
+  amc_exposures_json         Json?
+  overlap_values_json        Json?
+  created_at                 DateTime                  @default(now()) @db.DateTime(0)
+  updated_at                 DateTime                  @default(now()) @db.DateTime(0)
+  optimizer_lms_slack        optimizer_lms_slack[]
+  optimizer_overlap_slack    optimizer_overlap_slack[]
+
+  @@index([created_at], map: "idx_optimizer_run_created_at")
+  @@index([session_id], map: "idx_optimizer_run_session_id")
+  @@index([run_type], map: "idx_optimizer_run_type")
+  @@index([user_id], map: "idx_optimizer_run_user_id")
+}
+
+model optimizer_slack_reset_log {
+  id                    BigInt   @id @default(autoincrement())
+  user_id               BigInt
+  reset_reason          String   @db.VarChar(100)
+  previous_persona_code String?  @db.VarChar(120)
+  new_persona_code      String?  @db.VarChar(120)
+  previous_state_json   Json?
+  new_state_json        Json?
+  created_at            DateTime @default(now()) @db.DateTime(0)
+
+  @@index([reset_reason], map: "idx_slack_reset_reason")
+  @@index([user_id], map: "idx_slack_reset_user_id")
+}
+
+model otp_requests {
+  id            BigInt    @id @default(autoincrement())
+  email         String
+  otp_hash      String
+  expires_at    DateTime
+  attempts      Int       @default(0)
+  used_at       DateTime?
+  purpose       String?   @db.VarChar(50)
+  name          String?   @db.VarChar(255)
+  phone         String?   @db.VarChar(20)
+  role          String?   @db.VarChar(50)
+  password_hash String?   @db.VarChar(255)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+
+  @@index([email], map: "otp_request")
+}
+
+model overlap_limits {
+  id                       BigInt    @id @default(autoincrement())
+  category_1               String?   @db.VarChar(100)
+  category_2               String?   @db.VarChar(100)
+  overlap_limit_percentage Decimal?  @db.Decimal(6, 4)
+  collection_date          DateTime? @db.Date
+  created_at               DateTime  @default(now()) @db.DateTime(0)
+  updated_at               DateTime  @default(now()) @db.DateTime(0)
+}
+
+model overlap_matrix_entries {
+  id                      BigInt                  @id @default(autoincrement())
+  version_id              BigInt
+  fund_a_code             String                  @db.VarChar(50)
+  fund_b_code             String                  @db.VarChar(50)
+  fund_a_name             String?                 @db.VarChar(255)
+  fund_b_name             String?                 @db.VarChar(255)
+  overlap_percent         Decimal                 @db.Decimal(10, 6)
+  common_isin_count       Int                     @default(0)
+  created_at              DateTime                @default(now()) @db.DateTime(0)
+  overlap_matrix_versions overlap_matrix_versions @relation(fields: [version_id], references: [id], onDelete: Cascade)
+
+  @@unique([version_id, fund_a_code, fund_b_code], map: "uq_overlap_entry_version_pair")
+  @@index([fund_a_code], map: "idx_overlap_entry_fund_a")
+  @@index([fund_b_code], map: "idx_overlap_entry_fund_b")
+  @@index([version_id], map: "idx_overlap_entry_version")
+}
+
+model overlap_matrix_versions {
+  id                        BigInt                      @id @default(autoincrement())
+  version_tag               String                      @unique(map: "uq_overlap_matrix_version_tag") @db.VarChar(50)
+  collection_date           DateTime?                   @db.Date
+  fund_count                Int                         @default(0)
+  computed_at               DateTime                    @default(now()) @db.DateTime(0)
+  created_at                DateTime                    @default(now()) @db.DateTime(0)
+  updated_at                DateTime                    @default(now()) @db.DateTime(0)
+  compliance_matrix_entries compliance_matrix_entries[]
+  overlap_matrix_entries    overlap_matrix_entries[]
+}
+
+model persona_rules {
+  id                           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  main_investor_profile        String    @db.VarChar(100)
+  horizon                      String    @db.VarChar(100)
+  liquidity                    String    @db.VarChar(100)
+  investor_persona             String    @db.VarChar(150)
+  one_liner                    String?   @db.VarChar(255)
+  chips                        String?   @db.Text
+  asset_mix_equity             Decimal   @default(0.0000) @db.Decimal(6, 4)
+  asset_mix_debt               Decimal   @default(0.0000) @db.Decimal(6, 4)
+  asset_mix_precious_metals    Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_core_large_cap  Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_core_mid_cap    Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_core_small_cap  Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_international_1 Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_international_2 Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_international_3 Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_sector_bet_1    Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_sector_bet_2    Decimal   @default(0.0000) @db.Decimal(6, 4)
+  equity_split_sector_bet_3    Decimal   @default(0.0000) @db.Decimal(6, 4)
+  precious_metals_split_gold   Decimal   @default(0.0000) @db.Decimal(6, 4)
+  precious_metals_split_silver Decimal   @default(0.0000) @db.Decimal(6, 4)
+  debt_split_core              Decimal   @default(0.0000) @db.Decimal(6, 4)
+  debt_split_tactical          Decimal   @default(0.0000) @db.Decimal(6, 4)
+  source_note                  String?   @db.VarChar(255)
+  collection_date              DateTime? @db.Date
+  created_at                   DateTime  @default(now()) @db.Timestamp(0)
+  updated_at                   DateTime  @default(now()) @db.Timestamp(0)
+}
+
+model questionnaire_artifacts {
+  id                     BigInt                               @id @default(autoincrement())
+  session_id             BigInt
+  type                   questionnaire_artifacts_type
+  storage_url            String                               @db.Text
+  emailed_to             String?                              @db.VarChar(250)
+  email_status           questionnaire_artifacts_email_status @default(NOT_SENT)
+  generated_at           DateTime                             @default(now()) @db.DateTime(0)
+  created_at             DateTime                             @default(now()) @db.DateTime(0)
+  updated_at             DateTime                             @default(now()) @db.DateTime(0)
+  questionnaire_sessions questionnaire_sessions               @relation(fields: [session_id], references: [id], onDelete: Cascade, map: "fk_artifacts_session_id")
+
+  @@index([session_id, type], map: "idx_artifacts_session_type")
+}
+
+model questionnaire_recommendations {
+  id                     BigInt                 @id @default(autoincrement())
+  session_id             BigInt                 @unique(map: "uq_recommendations_session_id")
+  persona_code           String?                @db.VarChar(120)
+  portfolio_json         Json
+  explainers_json        Json?
+  inputs_json            Json?
+  generated_at           DateTime               @default(now()) @db.DateTime(0)
+  created_at             DateTime               @default(now()) @db.DateTime(0)
+  updated_at             DateTime               @default(now()) @db.DateTime(0)
+  questionnaire_sessions questionnaire_sessions @relation(fields: [session_id], references: [id], onDelete: Cascade, map: "fk_recommendations_session_id")
+}
+
+model questionnaire_session_answers {
+  id                     BigInt                 @id @default(autoincrement())
+  session_id             BigInt
+  answer_json            Json?
+  option_code            String?                @db.VarChar(120)
+  question_code          String                 @db.VarChar(120)
+  sub_option_code        String?                @db.VarChar(120)
+  weight                 Decimal                @db.Decimal(10, 4)
+  updated_at             DateTime               @default(now()) @db.DateTime(0)
+  created_at             DateTime               @default(now()) @db.DateTime(0)
+  questionnaire_sessions questionnaire_sessions @relation(fields: [session_id], references: [id], onDelete: Cascade, map: "fk_session_answers_session_id")
+
+  @@unique([session_id, question_code], map: "uq_session_answers_session_id_question_code")
+  @@index([question_code], map: "idx_session_answers_question_code")
+  @@index([session_id], map: "idx_session_answers_session_id")
+}
+
+model questionnaire_session_results {
+  id                     BigInt                 @id @default(autoincrement())
+  session_id             BigInt                 @unique(map: "uq_session_results_session_id")
+  scores_json            Json?
+  derived_json           Json?
+  system_profile         String?                @db.VarChar(50)
+  final_profile          String?                @db.VarChar(50)
+  profile_overridden     Boolean                @default(false)
+  horizon_tag            String?                @db.VarChar(50)
+  liquidity_tag          String?                @db.VarChar(50)
+  system_persona_code    String?                @db.VarChar(120)
+  final_persona_code     String?                @db.VarChar(120)
+  persona_overridden     Boolean                @default(false)
+  computed_at            DateTime               @default(now()) @db.DateTime(0)
+  created_at             DateTime               @default(now()) @db.DateTime(0)
+  updated_at             DateTime               @default(now()) @db.DateTime(0)
+  questionnaire_sessions questionnaire_sessions @relation(fields: [session_id], references: [id], onDelete: Cascade, map: "fk_session_results_session_id")
+}
+
+model questionnaire_sessions {
+  id                            BigInt                          @id @default(autoincrement())
+  user_id                       BigInt
+  status                        questionnaire_sessions_status   @default(IN_PROGRESS)
+  current_step                  Int?                            @default(1)
+  current_question_code         String?                         @db.VarChar(120)
+  started_at                    DateTime                        @default(now()) @db.DateTime(0)
+  last_saved_at                 DateTime                        @default(now()) @db.DateTime(0)
+  submitted_part1_at            DateTime?                       @db.DateTime(0)
+  submitted_part2_at            DateTime?                       @db.DateTime(0)
+  completed_at                  DateTime?                       @db.DateTime(0)
+  created_at                    DateTime                        @default(now()) @db.DateTime(0)
+  updated_at                    DateTime                        @default(now()) @db.DateTime(0)
+  questionnaire_artifacts       questionnaire_artifacts[]
+  questionnaire_recommendations questionnaire_recommendations?
+  questionnaire_session_answers questionnaire_session_answers[]
+  questionnaire_session_results questionnaire_session_results?
+  authentication                authentication                  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "fk_sessions_user_id")
+
+  @@index([user_id], map: "idx_sessions_user_id")
+  @@index([user_id, status], map: "idx_sessions_user_status")
+}
+
+model ranks {
+  id                                   BigInt    @id @default(autoincrement())
+  fund_id                              BigInt
+  unique_identifier_mfi_scheme_code    String?   @db.VarChar(255)
+  unique_identifier_fund_name          String?   @db.VarChar(255)
+  rank_equity_normal_case              String?   @db.VarChar(255)
+  rank_equity_special_case             String?   @db.VarChar(255)
+  rank_equity_nifty_50_case            String?   @db.VarChar(255)
+  rank_equity_nifty_500_case           String?   @db.VarChar(255)
+  rank_debt_core_portfolio             String?   @db.VarChar(255)
+  rank_debt_tactical                   String?   @db.VarChar(255)
+  rank_debt_short_term_parking         String?   @db.VarChar(255)
+  rank_precious_metals_category        String?   @db.VarChar(255)
+  rank_precious_metals_category_median String?   @db.VarChar(255)
+  collection_date                      DateTime? @db.Date
+  created_at                           DateTime  @default(now())
+  updated_at                           DateTime  @default(now())
+}
+
+model smart_recommendation {
+  id                                             BigInt    @id @default(autoincrement())
+  scheme_code                                    String?   @db.VarChar(50)
+  fund_commission_saved                          String?   @db.VarChar(50)
+  equity_fund_upside_capture                     String?   @db.VarChar(50)
+  equity_category_median_upside_capture          String?   @db.VarChar(50)
+  equity_fund_jansens_alpha                      String?   @db.VarChar(50)
+  equity_category_median_jansens_alpha           String?   @db.VarChar(50)
+  equity_fund_sharpe_ratio                       String?   @db.VarChar(50)
+  equity_category_median_sharpe_ratio            String?   @db.VarChar(50)
+  equity_fund_downside_capture                   String?   @db.VarChar(50)
+  equity_category_median_downside_capture        String?   @db.VarChar(50)
+  equity_fund_consistency                        String?   @db.VarChar(50)
+  equity_category_median_consistency             String?   @db.VarChar(50)
+  equity_fund_impact_cost_days                   String?   @db.VarChar(50)
+  equity_category_median_impact_cost_days        String?   @db.VarChar(50)
+  debt_fund_sharpe_ratio                         String?   @db.VarChar(50)
+  debt_category_median_sharpe_ratio              String?   @db.VarChar(50)
+  debt_fund_interest_rate_sensitivity            String?   @db.VarChar(50)
+  debt_category_median_interest_rate_sensitivity String?   @db.VarChar(50)
+  debt_fund_credit_safety                        String?   @db.VarChar(50)
+  debt_category_median_credit_safety             String?   @db.VarChar(50)
+  debt_fund_cash_cushion                         String?   @db.VarChar(50)
+  debt_category_median_cash_cushion              String?   @db.VarChar(50)
+  precious_metals_fund_tracking_error            String?   @db.VarChar(50)
+  precious_metals_category_median_tracking_error String?   @db.VarChar(50)
+  collection_date                                DateTime? @db.Date
+  created_at                                     DateTime  @default(now())
+  updated_at                                     DateTime  @default(now())
+
+  @@index([scheme_code], map: "smart_recommendation_scheme_code")
+}
+
+model smart_redemption {
+  id                     BigInt    @id @default(autoincrement())
+  scheme_code            String?   @db.VarChar(50)
+  lock_in_days           String?   @db.VarChar(50)
+  tax_days               String?   @db.VarChar(50)
+  exit_load_days_1       String?   @db.VarChar(50)
+  exit_load_percentage_1 String?   @db.VarChar(50)
+  exit_load_days_2       String?   @db.VarChar(50)
+  exit_load_percentage_2 String?   @db.VarChar(50)
+  exit_load_days_3       String?   @db.VarChar(50)
+  exit_load_percentage_3 String?   @db.VarChar(50)
+  stcg_percentage        String?   @db.VarChar(50)
+  ltcg_percentage        String?   @db.VarChar(50)
+  collection_date        DateTime? @db.Date
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @default(now())
+
+  @@index([scheme_code], map: "smart_redemption_scheme_code")
+}
+
+model soft_optimizer_runs {
+  id                            BigInt         @id @default(autoincrement())
+  user_id                       BigInt
+  session_id                    BigInt
+  did_run                       Boolean
+  run_reason                    String         @db.Text
+  total_portfolio_value         Decimal        @default(0.00) @db.Decimal(18, 2)
+  recommended_investment_amount Decimal        @default(0.00) @db.Decimal(18, 2)
+  trades_json                   Json?
+  fund_recommendations_json     Json?
+  breach_summary_json           Json?
+  step_reasoning_json           Json?
+  triggered_by                  String         @default("MANUAL") @db.VarChar(20)
+  created_at                    DateTime       @default(now())
+  authentication                authentication @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "fk_soft_opt_run_user_id")
+
+  @@index([user_id, created_at(sort: Desc)], map: "idx_soft_opt_run_user_date")
+}
+
+model transaction_history {
+  id                BigInt                        @id @default(autoincrement())
+  user_id           BigInt
+  date_time         DateTime                      @default(now())
+  optimizer_run_id  String?                       @db.VarChar(100)
+  optimizer_kind    String?                       @db.VarChar(50)
+  run_status        String?                       @db.VarChar(20)
+  user_risk_profile String?                       @db.VarChar(100)
+  user_persona      String?                       @db.VarChar(100)
+  fund_code         String                        @db.VarChar(50)
+  fund_name         String?                       @db.VarChar(255)
+  fund_isin         String?                       @db.VarChar(50)
+  asset_class       String?                       @db.VarChar(100)
+  sub_asset_class   String?                       @db.VarChar(100)
+  category          String?                       @db.VarChar(100)
+  stt_applicability String?                       @db.VarChar(10)
+  exit_load_pct     Decimal?                      @db.Decimal(10, 4)
+  transaction_id    String                        @db.VarChar(20)
+  tranche_id        String                        @db.VarChar(20)
+  direction         transaction_history_direction
+  days_old          Int?
+  purchase_date     DateTime?
+  purchase_amount   Decimal?                      @db.Decimal(18, 2)
+  stamp_duty        Decimal?                      @db.Decimal(18, 4)
+  allotment_date    DateTime?
+  allotment_units   Decimal?                      @db.Decimal(18, 6)
+  allotment_nav     Decimal?                      @db.Decimal(18, 6)
+  allotment_amount  Decimal?                      @db.Decimal(18, 2)
+  sell_date         DateTime?
+  stt_amount        Decimal?                      @db.Decimal(18, 4)
+  exit_load_amount  Decimal?                      @db.Decimal(18, 4)
+  settlement_date   DateTime?
+  settlement_units  Decimal?                      @db.Decimal(18, 6)
+  settlement_nav    Decimal?                      @db.Decimal(18, 6)
+  settlement_amount Decimal?                      @db.Decimal(18, 2)
+  source            transaction_history_source    @default(HARD_OPTIMIZER)
+  created_at        DateTime                      @default(now())
+  execution_status  String?                       @db.VarChar(20)
+  authentication    authentication                @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "fk_txn_history_user_id")
+
+  @@index([tranche_id], map: "idx_txn_history_tc_id")
+  @@index([transaction_id], map: "idx_txn_history_tx_id")
+  @@index([user_id, date_time], map: "idx_txn_history_user_date")
+  @@index([user_id, direction], map: "idx_txn_history_user_direction")
+  @@index([user_id, fund_code], map: "idx_txn_history_user_fund")
+}
+
+model user_optimizer_configs {
+  id                    BigInt         @id @default(autoincrement())
+  user_id               BigInt
+  session_id            BigInt?
+  mt_enabled            Boolean        @default(true)
+  blacklisted_funds     String?        @db.Text
+  updated_at            DateTime       @default(now())
+  created_at            DateTime       @default(now())
+  scheduled_for_tonight Boolean        @default(false)
+  authentication        authentication @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "fk_user_opt_cfg_user_id")
+
+  @@unique([user_id, session_id], map: "uq_user_opt_cfg")
+}
+
+model user_portfolio_tranches {
+  id              BigInt                         @id @default(autoincrement())
+  user_id         BigInt
+  session_id      BigInt?
+  fund_code       String                         @db.VarChar(50)
+  fund_name       String                         @db.VarChar(255)
+  asset_class     String                         @db.VarChar(100)
+  sub_asset_class String                         @db.VarChar(100)
+  amc_code        String                         @db.VarChar(100)
+  allotment_date  DateTime                       @db.DateTime(0)
+  purchase_value  Decimal                        @db.Decimal(18, 2)
+  current_value   Decimal                        @db.Decimal(18, 2)
+  units           Decimal                        @db.Decimal(18, 6)
+  nav_at_purchase Decimal?                       @db.Decimal(18, 6)
+  source          user_portfolio_tranches_source @default(HARD_OPTIMIZER)
+  status          user_portfolio_tranches_status @default(ACTIVE)
+  created_at      DateTime                       @default(now())
+  updated_at      DateTime                       @default(now())
+  authentication  authentication                 @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "fk_portfolio_tranche_user_id")
+
+  @@index([session_id], map: "idx_portfolio_tranche_session")
+  @@index([user_id, fund_code], map: "idx_portfolio_tranche_user_fund")
+  @@index([user_id, status], map: "idx_portfolio_tranche_user_status")
+}
+
+model users {
+  id                Int      @id @default(autoincrement())
+  name              String   @db.VarChar(255)
+  authentication_id Int?
+  remarks           String?  @db.Text
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now())
+  email             String?  @db.VarChar(255)
+  phone             String?  @db.VarChar(20)
+
+  @@index([authentication_id], map: "users_authentication_id")
+  @@index([email], map: "users_email")
+}
+
+model waitlist {
+  id                  BigInt   @id @default(autoincrement())
+  email               String   @unique(map: "email") @db.VarChar(255)
+  name                String?  @db.VarChar(255)
+  phone               String?  @unique(map: "phone") @db.VarChar(20)
+  remarks             String?  @db.Text
+  accepted_tnc        Int?     @default(0) @db.TinyInt
+  accepted_marketings Int?     @default(0) @db.TinyInt
+  created_at          DateTime @default(now())
+  updated_at          DateTime @default(now())
+
+  @@index([email], map: "waitlist_email")
+}
+
+enum questionnaire_artifacts_type {
+  PDF_IPS
+  PDF_PORTFOLIO
+  OTHER
+}
+
+enum questionnaire_sessions_status {
+  IN_PROGRESS
+  PART1_SUBMITTED
+  PART2_SUBMITTED
+  COMPLETED
+}
+
+enum optimizer_runs_run_type {
+  STRICT
+  SLACK
+}
+
+enum questionnaire_artifacts_email_status {
+  NOT_SENT
+  SENT
+  FAILED
+}
+
+enum compliance_matrix_entries_status {
+  ALLOWED
+  DISALLOWED
+}
+
+enum user_portfolio_tranches_source {
+  HARD_OPTIMIZER
+  SOFT_OPTIMIZER
+  MANUAL
+  CAS_IMPORT
+}
+
+enum user_portfolio_tranches_status {
+  ACTIVE
+  REDEEMED
+  PENDING_ALLOTMENT
+}
+
+enum transaction_history_direction {
+  BUY
+  SELL
+}
+
+enum transaction_history_source {
+  HARD_OPTIMIZER
+  SOFT_OPTIMIZER
+  MANUAL
+  CAS_IMPORT
+}

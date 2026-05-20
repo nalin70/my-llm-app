@@ -1,15 +1,15 @@
-import type { RowDataPacket } from 'mysql2';
-import { db } from '../config/database';
+import { prisma } from '../config/prisma';
 
 export type SearchFundsByNameOptions = {
   fundName: string;
   limit: number;
 };
 
-function normalizeRow(row: RowDataPacket) {
+function normalizeRow(row: Record<string, unknown>) {
   return Object.fromEntries(
     Object.entries(row).map(([key, value]) => [
       key,
+      typeof value === 'bigint' ? Number(value) :
       value instanceof Date ? value.toISOString().slice(0, 10) : value,
     ])
   );
@@ -17,19 +17,19 @@ function normalizeRow(row: RowDataPacket) {
 
 export class FundService {
   async searchFundsByName({ fundName, limit }: SearchFundsByNameOptions) {
-    const searchTerm = `%${fundName}%`;
-    const [rows] = await db.execute<RowDataPacket[]>(
-      `
-      SELECT *
-      FROM bio_data_1
-      WHERE fund_name LIKE ?
-        OR fund_name_2 LIKE ?
-      ORDER BY fund_name
-      LIMIT ${limit}
-      `,
-      [searchTerm, searchTerm]
-    );
+    const funds = await prisma.bio_data_1.findMany({
+      where: {
+        OR: [
+          { fund_name: { contains: fundName } },
+          { fund_name_2: { contains: fundName } },
+        ],
+      },
+      orderBy: {
+        fund_name: 'asc',
+      },
+      take: limit,
+    });
 
-    return rows.map(normalizeRow);
+    return funds.map((fund) => normalizeRow(fund));
   }
 }

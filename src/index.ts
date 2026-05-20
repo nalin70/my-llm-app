@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import { prisma } from './config/prisma';
 import { fundRoutes } from './routes/fundRoutes';
 
 const app = express();
@@ -35,6 +36,19 @@ app.use((error: unknown, request: express.Request, response: express.Response, _
   });
 });
 
-app.listen(port, () => {
-  console.log(`API server running on http://localhost:${port}`);
+async function startServer() {
+  await prisma.$connect();
+  console.log(
+    `Database connected: ${process.env.MYSQL_DATABASE ?? 'unknown'} at ${process.env.MYSQL_HOST ?? 'unknown'}:${process.env.MYSQL_PORT ?? 3306}`
+  );
+
+  app.listen(port, () => {
+    console.log(`API server running on http://localhost:${port}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error('Failed to start API server');
+  console.error(error);
+  process.exit(1);
 });
