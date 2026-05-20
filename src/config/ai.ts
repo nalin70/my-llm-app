@@ -1,13 +1,13 @@
-import { createOpenAI } from '@ai-sdk/openai';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error('Missing OPENAI_API_KEY environment variable');
+if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  throw new Error('Missing GOOGLE_GENERATIVE_AI_API_KEY environment variable');
 }
 
-export const openaiProvider = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+export const googleProvider = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
-// Define your default model configurations
-export const defaultModel = openaiProvider('gpt-4o-mini'); // Cost-effective & fast
-export const reasoningModel = openaiProvider('gpt-4o');    // For complex tasks/tools
+export const defaultModel = googleProvider('gemini-2.0-flash');
+export const reasoningModel = googleProvider('gemini-2.5-flash');
+export const fallbackReasoningModel = googleProvider('gemini-2.0-flash');

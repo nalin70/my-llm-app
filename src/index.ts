@@ -1,14 +1,40 @@
 import 'dotenv/config';
-import { AIService } from './services/aiService';
+import express from 'express';
+import { fundRoutes } from './routes/fundRoutes';
 
-const aiService = new AIService();
+const app = express();
+const port = Number(process.env.PORT ?? 3000);
 
-async function main() {
-  const result = await aiService.runSupportAgent(
-    "Hi, I want to check my account status. My email is jane@example.com."
-  );
-  console.log('Response:', result.response);
-  console.log('Tool results:', JSON.stringify(result.actionsTaken, null, 2));
-}
+app.use(express.json());
 
-main().catch(console.error);
+app.use((request, response, next) => {
+  const startedAt = Date.now();
+
+  response.on('finish', () => {
+    const durationMs = Date.now() - startedAt;
+    const query = Object.keys(request.query).length > 0 ? ` query=${JSON.stringify(request.query)}` : '';
+
+    console.log(`${request.method} ${request.originalUrl} ${response.statusCode} ${durationMs}ms${query}`);
+  });
+
+  next();
+});
+
+app.get('/health', (_request, response) => {
+  response.json({ status: 'ok' });
+});
+
+app.use('/api/funds', fundRoutes);
+
+app.use((error: unknown, request: express.Request, response: express.Response, _next: express.NextFunction) => {
+  console.error(`Unhandled error for ${request.method} ${request.originalUrl}`);
+  console.error(error);
+
+  response.status(500).json({
+    error: 'Internal server error',
+  });
+});
+
+app.listen(port, () => {
+  console.log(`API server running on http://localhost:${port}`);
+});

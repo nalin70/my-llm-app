@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "powershell -ExecutionPolicy Bypass -NoProfile -File scripts/start-dev.ps1",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,12 +20,16 @@
   },
   "homepage": "https://github.com/nalin70/my-llm-app#readme",
   "dependencies": {
+    "@ai-sdk/google": "^3.0.75",
     "@ai-sdk/openai": "^3.0.64",
     "ai": "^6.0.185",
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^25.9.0",
     "tsx": "^4.22.2",
     "typescript": "^6.0.3"
