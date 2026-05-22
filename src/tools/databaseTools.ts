@@ -1,13 +1,16 @@
 import { tool } from 'ai';
-import type { RowDataPacket } from 'mysql2';
+import type { Prisma } from '@prisma/client';
 import { z } from 'zod';
-import { db } from '../config/database';
+import { prisma } from '../config/prisma';
 
-function normalizeRow(row: RowDataPacket) {
+function normalizeRow(row: Record<string, unknown>) {
   return Object.fromEntries(
     Object.entries(row).map(([key, value]) => [
       key,
-      value instanceof Date ? value.toISOString().slice(0, 10) : value,
+      typeof value === 'bigint' ? Number(value) :
+      value instanceof Date ? value.toISOString().slice(0, 10) :
+      value && typeof value === 'object' && 'toString' in value ? value.toString() :
+      value,
     ])
   );
 }
@@ -49,53 +52,92 @@ export const searchMutualFundsTool = tool({
   description: 'Search mutual funds by name or scheme code and return fund metadata with the latest available NAV.',
   inputSchema: searchMutualFundsInputSchema,
   execute: async ({ query, limit }: SearchMutualFundsInput) => {
-    const searchTerm = `%${query}%`;
-    const [rows] = await db.execute<RowDataPacket[]>(
-      `
-      SELECT
-        fund.mfi_scheme_code AS schemeCode,
-        fund.fund_name AS fundName,
-        fund.fund_name_2 AS alternateFundName,
-        fund.asset_class AS assetClass,
-        fund.category,
-        fund.amfi_riskometer AS riskometer,
-        fund.objective,
-        fund.benchmark,
-        fund.fund_returns_1m AS return1m,
-        fund.fund_returns_3m AS return3m,
-        fund.fund_returns_6m AS return6m,
-        fund.fund_returns_1y AS return1y,
-        fund.fund_returns_3y AS return3y,
-        fund.fund_returns_5y AS return5y,
-        fund.fund_aum AS aum,
-        fund.expense_ratio AS expenseRatio,
-        fund.minimum_investment_amount_rs AS minimumInvestmentAmount,
-        fund.launch_date AS launchDate,
-        latest_nav.nav_date AS latestNavDate,
-        latest_nav.nav_value AS latestNavValue
-      FROM bio_data_1 fund
-      LEFT JOIN (
-        SELECT nav.scheme_code, nav.nav_date, nav.nav_value
-        FROM fund_nav nav
-        INNER JOIN (
-          SELECT scheme_code, MAX(nav_date) AS latest_nav_date
-          FROM fund_nav
-          GROUP BY scheme_code
-        ) latest
-          ON latest.scheme_code = nav.scheme_code
-          AND latest.latest_nav_date = nav.nav_date
-      ) latest_nav
-        ON latest_nav.scheme_code = fund.mfi_scheme_code
-      WHERE fund.fund_name LIKE ?
-        OR fund.fund_name_2 LIKE ?
-        OR fund.mfi_scheme_code = ?
-      ORDER BY fund.fund_name
-      LIMIT ${limit}
-      `,
-      [searchTerm, searchTerm, query]
+    const funds = await prisma.bio_data_1.findMany({
+      where: {
+        OR: [
+          { fund_name: { contains: query } },
+          { fund_name_2: { contains: query } },
+          { mfi_scheme_code: query },
+        ],
+      },
+      select: {
+        mfi_scheme_code: true,
+        fund_name: true,
+        fund_name_2: true,
+        asset_class: true,
+        category: true,
+        amfi_riskometer: true,
+        objective: true,
+        benchmark: true,
+        fund_returns_1m: true,
+        fund_returns_3m: true,
+        fund_returns_6m: true,
+        fund_returns_1y: true,
+        fund_returns_3y: true,
+        fund_returns_5y: true,
+        fund_aum: true,
+        expense_ratio: true,
+        minimum_investment_amount_rs: true,
+        launch_date: true,
+      },
+      orderBy: {
+        fund_name: 'asc',
+      },
+      take: limit,
+    });
+
+    const latestNavRows = await Promise.all(
+      funds.map((fund) =>
+        prisma.fund_nav.findFirst({
+          where: {
+            scheme_code: fund.mfi_scheme_code,
+          },
+          select: {
+            scheme_code: true,
+            nav_date: true,
+            nav_value: true,
+          },
+          orderBy: {
+            nav_date: 'desc',
+          },
+        })
+      )
     );
 
-    return rows.map(normalizeRow);
+    const latestNavBySchemeCode = new Map<string, NonNullable<(typeof latestNavRows)[number]>>();
+
+    for (const nav of latestNavRows) {
+      if (nav) {
+        latestNavBySchemeCode.set(nav.scheme_code, nav);
+      }
+    }
+
+    return funds.map((fund) => {
+      const latestNav = latestNavBySchemeCode.get(fund.mfi_scheme_code);
+
+      return normalizeRow({
+        schemeCode: fund.mfi_scheme_code,
+        fundName: fund.fund_name,
+        alternateFundName: fund.fund_name_2,
+        assetClass: fund.asset_class,
+        category: fund.category,
+        riskometer: fund.amfi_riskometer,
+        objective: fund.objective,
+        benchmark: fund.benchmark,
+        return1m: fund.fund_returns_1m,
+        return3m: fund.fund_returns_3m,
+        return6m: fund.fund_returns_6m,
+        return1y: fund.fund_returns_1y,
+        return3y: fund.fund_returns_3y,
+        return5y: fund.fund_returns_5y,
+        aum: fund.fund_aum,
+        expenseRatio: fund.expense_ratio,
+        minimumInvestmentAmount: fund.minimum_investment_amount_rs,
+        launchDate: fund.launch_date,
+        latestNavDate: latestNav?.nav_date ?? null,
+        latestNavValue: latestNav?.nav_value ?? null,
+      });
+    });
   },
 });
 
@@ -103,34 +145,38 @@ export const getMutualFundNavHistoryTool = tool({
   description: 'Get historical NAV values for a mutual fund by scheme code.',
   inputSchema: getMutualFundNavHistoryInputSchema,
   execute: async ({ schemeCode, fromDate, toDate, limit }: GetMutualFundNavHistoryInput) => {
-    const conditions = ['scheme_code = ?'];
-    const values: Array<string | number> = [schemeCode];
+    const where: Prisma.fund_navWhereInput = {
+      scheme_code: schemeCode,
+    };
 
-    if (fromDate) {
-      conditions.push('nav_date >= ?');
-      values.push(fromDate);
+    if (fromDate || toDate) {
+      where.nav_date = {
+        ...(fromDate ? { gte: new Date(`${fromDate}T00:00:00.000Z`) } : {}),
+        ...(toDate ? { lte: new Date(`${toDate}T00:00:00.000Z`) } : {}),
+      };
     }
 
-    if (toDate) {
-      conditions.push('nav_date <= ?');
-      values.push(toDate);
-    }
+    const rows = await prisma.fund_nav.findMany({
+      where,
+      select: {
+        scheme_code: true,
+        cleaned_fund_name: true,
+        nav_date: true,
+        nav_value: true,
+      },
+      orderBy: {
+        nav_date: 'desc',
+      },
+      take: limit,
+    });
 
-    const [rows] = await db.execute<RowDataPacket[]>(
-      `
-      SELECT
-        scheme_code AS schemeCode,
-        cleaned_fund_name AS fundName,
-        nav_date AS navDate,
-        nav_value AS navValue
-      FROM fund_nav
-      WHERE ${conditions.join(' AND ')}
-      ORDER BY nav_date DESC
-      LIMIT ${limit}
-      `,
-      values
+    return rows.map((row) =>
+      normalizeRow({
+        schemeCode: row.scheme_code,
+        fundName: row.cleaned_fund_name,
+        navDate: row.nav_date,
+        navValue: row.nav_value,
+      })
     );
-
-    return rows.map(normalizeRow);
   },
 });

@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express';
 import { z } from 'zod';
+import { fundRecommendationRequestSchema } from '../schemas/fundRecommendation';
+import { FundRecommendationService } from '../services/fundRecommendationService';
 import { FundService } from '../services/fundService';
 
 const searchFundsQuerySchema = z.object({
@@ -8,6 +10,7 @@ const searchFundsQuerySchema = z.object({
 });
 
 const fundService = new FundService();
+const fundRecommendationService = new FundRecommendationService();
 
 export class FundController {
   async searchFundsByName(request: Request, response: Response) {
@@ -31,5 +34,24 @@ export class FundController {
       count: funds.length,
       data: funds,
     });
+  }
+
+  async recommendFunds(request: Request, response: Response) {
+    const parsedBody = fundRecommendationRequestSchema.safeParse(request.body);
+
+    if (!parsedBody.success) {
+      return response.status(400).json({
+        error: 'Invalid recommendation request',
+        details: parsedBody.error.flatten().fieldErrors,
+      });
+    }
+
+    const recommendation = await fundRecommendationService.recommendFunds(parsedBody.data);
+
+    console.log(
+      `Fund recommendation completed amount=${parsedBody.data.investmentAmount} horizon=${parsedBody.data.investmentHorizon} risk=${parsedBody.data.riskTolerance} buckets=${recommendation.recommendations.length}`
+    );
+
+    return response.json(recommendation);
   }
 }
